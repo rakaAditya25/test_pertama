@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherit_res_country_state" model="ir.ui.view">
+        <field name="name">inherit.res.country.state</field>
+        <field name="model">res.country.state</field>
+        <field name="inherit_id" ref="base.view_country_state_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="prov_ro_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="daerah_city_tree" model="ir.ui.view">
+        <field name="name">city.tre</field>
+        <field name="model">city</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0">
+                <field name="name"/>
+                <field name="state_id"/>
+                <field name="code_pos"/>
+                <field name="type_daerah"/>
+                <field name="city_ro_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    
+
+    <record id="action_city" model="ir.actions.act_window">
+        <field name="name">city</field>
+        <field name="res_model">city</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem 
+        id="submenu_daerah"
+        name="Daerah"
+        sequence="400"
+    />
+
+    <menuitem
+        id="menu_sub_provinsi"
+        name="Daerah"
+        parent="cek_harga_ongkir.submenu_daerah"
+        sequence="5"
+    />
+    
+    <menuitem
+        id="menu_daerah"
+        name="Provinsi"
+        parent="cek_harga_ongkir.menu_sub_provinsi"
+        sequence="3"
+        action="action_city"/>
+</odoo>

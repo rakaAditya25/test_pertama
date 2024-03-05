@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="daerah_wz_get_data_ro_form" model="ir.ui.view">
+        <field name="name">wz.get_data.ro.form</field>
+        <field name="model">wz.get_data.ro</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <group attrs="{'invisible': [('name', 'not in', ['cost', 'kurir'])]}">
+                            <field name="province_awal_id"/>
+                            <field name="province_tujuan_id"/>
+                        </group>
+                        <group attrs="{'invisible': [('name', 'not in', ['cost', 'kurir'])]}">
+                            <field name="kurir_id"/>
+                            <field name="berat"/>
+                        </group>
+                        <notebook attrs="{'invisible': [('name', '!=', 'cost')]}">
+                            <page string="List Service Kurir">
+                                <field name="service_kurir_ids" widget="many2many">
+                                    <tree create="0" edit="0">
+                                        <field name="name"/>
+                                        <field name="price"/>
+                                        <field name="estimasi"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </group>
+                    <footer>
+                        <button string="Generate" name="get_data_ro" type="object" class="oe_highlight"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wz_get_date_ro_form" model="ir.actions.act_window">
+        <field name="name"> Get Data Raja Ongkir </field>
+        <field name="res_model">wz.get_data.ro</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_sub_get_data_raja_ongkir"
+        name="Get Raja Ongkir"
+        parent="cek_harga_ongkir.submenu_daerah"
+        action = "action_wz_get_date_ro_form"
+        sequence="7"
+    />
+</odoo>

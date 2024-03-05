@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_provinsi,access_provinsi,model_provinsi,,1,1,1,1
+access_city,access_city,model_city,,1,1,1,1
+access_wz_get_data_ro,access_wz_get_data_ro,model_wz_get_data_ro,,1,1,1,1
+access_service_kurir,access_service_kurir,model_service_kurir,,1,1,1,1
+access_jenis_kurir,access_jenis_kurir,model_jenis_kurir,,1,1,1,1
