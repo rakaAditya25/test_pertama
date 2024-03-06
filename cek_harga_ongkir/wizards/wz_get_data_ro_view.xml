@@ -13,8 +13,9 @@
                             <field name="province_tujuan_id"/>
                         </group>
                         <group attrs="{'invisible': [('name', 'not in', ['cost', 'kurir'])]}">
-                            <field name="kurir_id"/>
                             <field name="berat"/>
+                            <field name="kurir_id" attrs="{'invisible': [('name', '=', 'kurir')]}"/>
+                            <field name="kurir" attrs="{'invisible': [('name', '!=', 'kurir')]}"/>
                         </group>
                         <notebook attrs="{'invisible': [('name', '!=', 'cost')]}">
                             <page string="List Service Kurir">

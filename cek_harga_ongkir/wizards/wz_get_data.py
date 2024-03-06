@@ -115,10 +115,10 @@ class WizardsGetDataRO(models.TransientModel):
                                     #     'kurir_id': jenis.id
                                     #     })]
                                 })
-            return{
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'res_model': 'wz.get_data.ro',
-                'target': 'new',
-                'res_id': self.id
-            }
+            # return{
+            #     'type': 'ir.actions.act_window',
+            #     'view_mode': 'form',
+            #     'res_model': 'wz.get_data.ro',
+            #     'target': 'new',
+            #     'res_id': self.id
+            # }
