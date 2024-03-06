@@ -7,7 +7,11 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </group>
+                    <group>
                         <group attrs="{'invisible': [('name', 'not in', ['cost', 'kurir'])]}">
                             <field name="province_awal_id"/>
                             <field name="province_tujuan_id"/>
@@ -30,7 +34,8 @@
                         </notebook>
                     </group>
                     <footer>
-                        <button string="Generate" name="get_data_ro" type="object" class="oe_highlight"/>
+                        <button string="Generate" name="get_data_ro" type="object" class="oe_highlight" attrs="{'invisible': [('name', '=', 'cost')]}"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
                     </footer>
                 </sheet>
             </form>

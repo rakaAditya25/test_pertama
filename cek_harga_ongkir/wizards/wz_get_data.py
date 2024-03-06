@@ -5,13 +5,14 @@ class WizardsGetDataRO(models.TransientModel):
     _name = 'wz.get_data.ro'
     _description = "Get Data RAJA ONGKIR"
 
-    name = fields.Selection([('provinsi', 'Provinsi'), ('city', 'Kota'), ('kurir', 'Kurir'), ('cost', 'Check Cost')], required=True, default='provinsi', string="Pilih Data")
+    name = fields.Selection([('provinsi', 'Provinsi'), ('city', 'Kota'), ('kurir', 'Kurir'), ('cost', 'Check Cost')], default='cost', required=True, string="Pilih Data")
     province_awal_id = fields.Many2one('city', string="From")
     province_tujuan_id = fields.Many2one('city',string="To")
     kurir = fields.Selection([('jne', 'JNE'), ('pos', 'POS'), ('tiki', 'TIKI')])
     kurir_id = fields.Many2one('jenis.kurir')
     berat = fields.Float()
-    service_kurir_ids = fields.Many2many('service.kurir', string="To")
+    # service_kurir_ids = fields.One2many('service.kurir', 'kurir_id', string="Jasa Kurir")
+    service_kurir_ids = fields.Many2many('service.kurir', string="Jasa Kurir")
 
     def get_data_ro(self):
         if self.name == 'provinsi':
@@ -78,47 +79,44 @@ class WizardsGetDataRO(models.TransientModel):
                                 'name': prov['name'],
                                 'code': prov['code']
                             })
-        else:
-            if self.province_awal_id and self.province_tujuan_id and self.kurir_id and self.berat:
-                url = "https://api.rajaongkir.com/starter/cost"
-                payload = {
-                    'origin': self.province_awal_id.city_ro_id,
-                    'destination': self.province_tujuan_id.city_ro_id,
-                    'weight': self.berat,
-                    'courier': self.kurir_id.code
+        # else:
+    
+    @api.onchange('kurir_id')
+    def _onchange_service_kurir_ids(self):
+        if self.province_awal_id and self.province_tujuan_id and self.kurir_id and self.berat:
+            url = "https://api.rajaongkir.com/starter/cost"
+            payload = {
+                'origin': self.province_awal_id.city_ro_id,
+                'destination': self.province_tujuan_id.city_ro_id,
+                'weight': self.berat,
+                'courier': self.kurir_id.code
+            }
+            files=[]
+            headers = {
+            'key': '8dc9e7af902189fe4210b56af68ca959'
+            }
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            cek = [value for rec, value in response.json().items()]
+            service = self.env['service.kurir'].search([('kurir_id', '=', self.kurir_id.id)])
+            if service:
+                service.unlink()
+            for rec in cek:
+                for cost in rec['results']:
+                    for cos in cost['costs']:
+                        for c in cos['cost']:
+                            self.kurir_id.write({
+                                'kurir_line':[(0, 0, {
+                                    'name': cos['service'],
+                                    'price': float(c['value']),
+                                    'estimasi': c['etd'],
+                                })]
+                            })
+                            service_kurir = self.env['service.kurir'].search([('kurir_id', '=', self.kurir_id.id)]).ids
+                            self.service_kurir_ids = [(6,0, service_kurir)]
+                return{
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_model': 'wz.get_data.ro',
+                    'target': 'new',
+                    'res_id': self.id
                 }
-                files=[]
-                headers = {
-                'key': '8dc9e7af902189fe4210b56af68ca959'
-                }
-                response = requests.request("POST", url, headers=headers, data=payload, files=files)
-                cek = [value for rec, value in response.json().items()]
-                jenis = self.env['jenis.kurir'].search([('id', '=', self.kurir_id.id)])
-                service = self.env['service.kurir'].search([('kurir_id', '=', jenis.id)])
-                for rec in cek:
-                    if service:
-                        service.unlink()
-                    for cost in rec['results']:
-                        for cos in cost['costs']:
-                            for c in cos['cost']:
-                                print("====", cos['service'], c['etd'], c['value'], jenis.name)
-                                jenis.write({
-                                    'kurir_line':[(1, self.kurir_id.kurir_line.ids[0],{
-                                        'name': cos['service'],
-                                        'price': float(c['value']),
-                                        'estimasi': c['etd'],
-                                    })]
-                                    # 'kurir_line' [(0, 0, {
-                                    #     'name': cos['service'],
-                                    #     'price': float(c['value']),
-                                    #     'estimasi': c['etd'],
-                                    #     'kurir_id': jenis.id
-                                    #     })]
-                                })
-            # return{
-            #     'type': 'ir.actions.act_window',
-            #     'view_mode': 'form',
-            #     'res_model': 'wz.get_data.ro',
-            #     'target': 'new',
-            #     'res_id': self.id
-            # }
